@@ -37,6 +37,7 @@ export default function App() {
   const documentInputRef = useRef(null);
   const [status, setStatus] = useState({ type: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -46,8 +47,7 @@ export default function App() {
     if (status.type) setStatus({ type: '', message: '' });
   }
 
-  function handleFileChange(event) {
-    const file = event.target.files[0] || null;
+  function setSelectedFile(file) {
     if (!file) {
       setDocumentFile(null);
       setErrors((current) => ({ ...current, document: '' }));
@@ -66,6 +66,22 @@ export default function App() {
       setDocumentFile(file);
       setErrors((current) => ({ ...current, document: '' }));
     }
+  }
+
+  function handleFileChange(event) {
+    setSelectedFile(event.target.files[0] || null);
+  }
+
+  function handleDrop(event) {
+    event.preventDefault();
+    setIsDragging(false);
+    setSelectedFile(event.dataTransfer.files[0] || null);
+  }
+
+  function removeSelectedFile() {
+    setDocumentFile(null);
+    setErrors((current) => ({ ...current, document: '' }));
+    if (documentInputRef.current) documentInputRef.current.value = '';
   }
 
   async function handleSubmit(event) {
@@ -128,12 +144,26 @@ export default function App() {
             <Field label="Phone" name="phone" type="tel" inputMode="numeric" maxLength="10" value={values.phone} onChange={handleChange} error={errors.phone} />
             <Field label="Subject" name="subject" value={values.subject} onChange={handleChange} error={errors.subject} />
           </div>
-          <Field label="Message" name="message" value={values.message} onChange={handleChange} error={errors.message} textarea />
+          <div className="field full-width message-field">
+            <div className="field-heading">
+              <label htmlFor="field-message">Message</label>
+              <span className="character-count">{values.message.length}/1000</span>
+            </div>
+            <textarea id="field-message" name="message" value={values.message} onChange={handleChange} maxLength="1000" rows="5" aria-invalid={Boolean(errors.message)} aria-describedby={errors.message ? 'field-message-error' : undefined} />
+            {errors.message && <p className="field-error" id="field-message-error">{errors.message}</p>}
+          </div>
 
           <div className="field full-width">
             <label htmlFor="field-document">Document (optional)</label>
-            <input ref={documentInputRef} id="field-document" name="document" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" onChange={handleFileChange} aria-invalid={Boolean(errors.document)} aria-describedby={errors.document ? 'field-document-error' : undefined} />
-            {documentFile && <p className="file-name">{documentFile.name}</p>}
+            <div className={`upload-zone ${isDragging ? 'is-dragging' : ''} ${errors.document ? 'has-error' : ''}`} onDragEnter={(event) => { event.preventDefault(); setIsDragging(true); }} onDragOver={(event) => event.preventDefault()} onDragLeave={() => setIsDragging(false)} onDrop={handleDrop}>
+              <input ref={documentInputRef} id="field-document" name="document" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" onChange={handleFileChange} aria-invalid={Boolean(errors.document)} aria-describedby={errors.document ? 'field-document-error' : undefined} />
+              <label className="upload-label" htmlFor="field-document">
+                <span className="upload-icon" aria-hidden="true">↑</span>
+                <span><strong>Choose a file</strong> or drag it here</span>
+                <small>PDF, DOC, DOCX, XLS or XLSX · max 10MB</small>
+              </label>
+            </div>
+            {documentFile && <div className="selected-file"><span className="file-type" aria-hidden="true">FILE</span><span className="file-name">{documentFile.name}</span><button type="button" className="remove-file" onClick={removeSelectedFile} aria-label={`Remove ${documentFile.name}`}>Remove</button></div>}
             {errors.document && <p className="field-error" id="field-document-error">{errors.document}</p>}
           </div>
 
