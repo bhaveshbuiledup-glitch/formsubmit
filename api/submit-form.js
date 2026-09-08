@@ -19,8 +19,8 @@ function validateSubmission(body) {
 
 function formatMessage({ name, email, phone, subject, message }) {
   const submitted = new Intl.DateTimeFormat('en-GB', {
-    dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC'
-  }).format(new Date()) + ' UTC';
+    dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata'
+  }).format(new Date()) + ' IST';
   return [
     '📩 NEW FORM SUBMISSION', '',
     `👤 Name: ${name.trim()}`,
