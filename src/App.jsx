@@ -10,6 +10,14 @@ const initialValues = {
 
 const allowedFileExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
 const maxFileSize = 10 * 1024 * 1024;
+const features = [
+  ['↯', 'Fast response', 'We keep communication clear and timely.'],
+  ['◈', 'Secure handling', 'Your details stay protected from start to finish.'],
+  ['◎', 'Human support', 'Real people are ready to understand your needs.'],
+  ['↔', 'Flexible process', 'Share a brief or a document in the way that suits you.'],
+  ['✓', 'Careful delivery', 'Every request is reviewed with attention to detail.'],
+  ['∞', 'Long-term focus', 'We build thoughtful solutions that keep working.']
+];
 
 function validate(values) {
   const errors = {};
@@ -57,11 +65,11 @@ export default function App() {
     if (!allowedFileExtensions.includes(extension)) {
       setDocumentFile(null);
       setErrors((current) => ({ ...current, document: 'Please upload a PDF, DOC, DOCX, XLS, or XLSX file.' }));
-      event.target.value = '';
+      if (documentInputRef.current) documentInputRef.current.value = '';
     } else if (file.size > maxFileSize) {
       setDocumentFile(null);
       setErrors((current) => ({ ...current, document: 'Document size must be 10MB or less.' }));
-      event.target.value = '';
+      if (documentInputRef.current) documentInputRef.current.value = '';
     } else {
       setDocumentFile(file);
       setErrors((current) => ({ ...current, document: '' }));
@@ -139,10 +147,10 @@ export default function App() {
 
         <form onSubmit={handleSubmit} noValidate>
           <div className="field-grid">
-            <Field label="Name" name="name" value={values.name} onChange={handleChange} error={errors.name} />
-            <Field label="Email" name="email" type="email" value={values.email} onChange={handleChange} error={errors.email} />
-            <Field label="Phone" name="phone" type="tel" inputMode="numeric" maxLength="10" value={values.phone} onChange={handleChange} error={errors.phone} />
-            <Field label="Subject" name="subject" value={values.subject} onChange={handleChange} error={errors.subject} />
+            <Field label="Name" icon="✦" name="name" value={values.name} onChange={handleChange} error={errors.name} />
+            <Field label="Email" icon="@" name="email" type="email" value={values.email} onChange={handleChange} error={errors.email} />
+            <Field label="Phone" icon="+" name="phone" type="tel" inputMode="numeric" maxLength="10" value={values.phone} onChange={handleChange} error={errors.phone} />
+            <Field label="Subject" icon="↗" name="subject" value={values.subject} onChange={handleChange} error={errors.subject} />
           </div>
           <div className="field full-width message-field">
             <div className="field-heading">
@@ -172,17 +180,32 @@ export default function App() {
             {isSubmitting ? 'Sending...' : 'Send message'}
           </button>
         </form>
+
+        <section className="features" aria-labelledby="features-title">
+          <div className="features-heading">
+            <p className="eyebrow">WHY WORK WITH US</p>
+            <h2 id="features-title">Thoughtful from the first message.</h2>
+          </div>
+          <div className="feature-grid">
+            {features.map(([icon, title, description]) => (
+              <article className="feature-item" key={title}>
+                <span className="feature-icon" aria-hidden="true">{icon}</span>
+                <div><h3>{title}</h3><p>{description}</p></div>
+              </article>
+            ))}
+          </div>
+        </section>
       </section>
     </main>
   );
 }
 
-function Field({ label, name, type = 'text', inputMode, maxLength, value, onChange, error, textarea = false }) {
+function Field({ label, icon, name, type = 'text', inputMode, maxLength, value, onChange, error, textarea = false }) {
   const id = `field-${name}`;
   const commonProps = { id, name, value, onChange, 'aria-invalid': Boolean(error), 'aria-describedby': error ? `${id}-error` : undefined };
   return (
     <div className={`field ${textarea ? 'full-width' : ''}`}>
-      <label htmlFor={id}>{label}</label>
+      <label htmlFor={id}><span className="field-icon" aria-hidden="true">{icon}</span>{label}</label>
       {textarea ? <textarea {...commonProps} rows="5" /> : <input {...commonProps} type={type} inputMode={inputMode} maxLength={maxLength} />}
       {error && <p className="field-error" id={`${id}-error`}>{error}</p>}
     </div>
