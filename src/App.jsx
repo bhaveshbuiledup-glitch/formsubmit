@@ -22,8 +22,8 @@ function validate(values) {
   }
   if (!values.phone.trim()) {
     errors.phone = 'Please enter your phone number.';
-  } else if (!/^\d{1,19}$/.test(values.phone.trim())) {
-    errors.phone = 'Phone number must contain only digits and a maximum of 19 digits.';
+  } else if (!/^\d{10}$/.test(values.phone.trim())) {
+    errors.phone = 'Phone number must contain exactly 10 digits.';
   }
   if (!values.subject.trim()) errors.subject = 'Please enter a subject.';
   if (!values.message.trim()) errors.message = 'Please enter a message.';
@@ -39,7 +39,7 @@ export default function App() {
 
   function handleChange(event) {
     const { name, value } = event.target;
-    const nextValue = name === 'phone' ? value.replace(/\D/g, '').slice(0, 19) : value;
+    const nextValue = name === 'phone' ? value.replace(/\D/g, '').slice(0, 10) : value;
     setValues((current) => ({ ...current, [name]: nextValue }));
     setErrors((current) => ({ ...current, [name]: '' }));
     if (status.type) setStatus({ type: '', message: '' });
@@ -123,7 +123,7 @@ export default function App() {
           <div className="field-grid">
             <Field label="Name" name="name" value={values.name} onChange={handleChange} error={errors.name} />
             <Field label="Email" name="email" type="email" value={values.email} onChange={handleChange} error={errors.email} />
-            <Field label="Phone" name="phone" type="tel" inputMode="numeric" maxLength="19" value={values.phone} onChange={handleChange} error={errors.phone} />
+            <Field label="Phone" name="phone" type="tel" inputMode="numeric" maxLength="10" value={values.phone} onChange={handleChange} error={errors.phone} />
             <Field label="Subject" name="subject" value={values.subject} onChange={handleChange} error={errors.subject} />
           </div>
           <Field label="Message" name="message" value={values.message} onChange={handleChange} error={errors.message} textarea />

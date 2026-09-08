@@ -13,7 +13,7 @@ function validateSubmission(body) {
   if (![name, email, phone, subject, message].every((value) => typeof value === 'string' && value.trim())) return 'All fields are required.';
   if (!/^[A-Z][A-Za-z]*(?:[ '-][A-Za-z]+)*$/.test(name.trim())) return 'Name must start with an uppercase letter.';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return 'Please provide a valid email address.';
-  if (!/^\d{1,19}$/.test(phone.trim())) return 'Phone number must contain only digits and a maximum of 19 digits.';
+  if (!/^\d{10}$/.test(phone.trim())) return 'Phone number must contain exactly 10 digits.';
   return null;
 }
 

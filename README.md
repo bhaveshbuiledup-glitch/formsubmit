@@ -2,7 +2,7 @@
 
 A React form with client/server validation and secure Telegram delivery through an Express API locally or a Vercel API function in production.
 
-The optional document upload accepts PDF, DOC, DOCX, XLS, and XLSX files up to 10MB. Phone numbers accept digits only, with a maximum of 19 digits.
+The optional document upload accepts PDF, DOC, DOCX, XLS, and XLSX files up to 10MB. Phone numbers accept exactly 10 digits.
 
 ## Setup
 
