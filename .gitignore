@@ -4,3 +4,4 @@ dist/
 .env.*
 !.env.example
 src/TELEGRAM_BOT_TOKEN=your_bot_token.txt
+.vercel/
