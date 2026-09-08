@@ -57,8 +57,14 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...values, submissionToken })
       });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'Submission failed.');
+      const responseText = await response.text();
+      let result = {};
+      try {
+        result = responseText ? JSON.parse(responseText) : {};
+      } catch {
+        throw new Error('The submission service returned an invalid response. Please try again.');
+      }
+      if (!response.ok) throw new Error(result.error || 'Failed to submit the form. Please try again.');
 
       setStatus({ type: 'success', message: 'Form submitted successfully!' });
       setValues(initialValues);
