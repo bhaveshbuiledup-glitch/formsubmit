@@ -69,7 +69,10 @@ export default function App() {
       setStatus({ type: 'success', message: 'Form submitted successfully!' });
       setValues(initialValues);
     } catch (error) {
-      setStatus({ type: 'error', message: error.message || 'Failed to submit the form. Please try again.' });
+      const message = error instanceof TypeError
+        ? 'Unable to connect to the submission service. Please try again.'
+        : error.message || 'Failed to submit the form. Please try again.';
+      setStatus({ type: 'error', message });
     } finally {
       setIsSubmitting(false);
     }
