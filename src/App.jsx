@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 const initialValues = {
   name: '',
@@ -34,6 +34,7 @@ export default function App() {
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
   const [documentFile, setDocumentFile] = useState(null);
+  const documentInputRef = useRef(null);
   const [status, setStatus] = useState({ type: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -100,6 +101,7 @@ export default function App() {
       setStatus({ type: 'success', message: 'Form submitted successfully!' });
       setValues(initialValues);
       setDocumentFile(null);
+      if (documentInputRef.current) documentInputRef.current.value = '';
     } catch (error) {
       const message = error instanceof TypeError
         ? 'Unable to connect to the submission service. Please try again.'
@@ -130,7 +132,7 @@ export default function App() {
 
           <div className="field full-width">
             <label htmlFor="field-document">Document (optional)</label>
-            <input id="field-document" name="document" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" onChange={handleFileChange} aria-invalid={Boolean(errors.document)} aria-describedby={errors.document ? 'field-document-error' : undefined} />
+            <input ref={documentInputRef} id="field-document" name="document" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" onChange={handleFileChange} aria-invalid={Boolean(errors.document)} aria-describedby={errors.document ? 'field-document-error' : undefined} />
             {documentFile && <p className="file-name">{documentFile.name}</p>}
             {errors.document && <p className="field-error" id="field-document-error">{errors.document}</p>}
           </div>
