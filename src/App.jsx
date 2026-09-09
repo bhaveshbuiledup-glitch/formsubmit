@@ -46,6 +46,7 @@ export default function App() {
   const [status, setStatus] = useState({ type: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -92,6 +93,14 @@ export default function App() {
     if (documentInputRef.current) documentInputRef.current.value = '';
   }
 
+  function resetForm() {
+    setValues(initialValues);
+    setErrors({});
+    setDocumentFile(null);
+    setIsDragging(false);
+    if (documentInputRef.current) documentInputRef.current.value = '';
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
     if (isSubmitting) return;
@@ -100,6 +109,12 @@ export default function App() {
     setErrors(nextErrors);
     setStatus({ type: '', message: '' });
     if (Object.keys(nextErrors).length) return;
+
+    setIsConfirmOpen(true);
+  }
+
+  async function confirmSubmission() {
+    if (isSubmitting) return;
 
     setIsSubmitting(true);
     const submissionToken = crypto.randomUUID();
@@ -123,9 +138,8 @@ export default function App() {
       if (!response.ok) throw new Error(result.error || 'Failed to submit the form. Please try again.');
 
       setStatus({ type: 'success', message: 'Form submitted successfully!' });
-      setValues(initialValues);
-      setDocumentFile(null);
-      if (documentInputRef.current) documentInputRef.current.value = '';
+      resetForm();
+      setIsConfirmOpen(false);
     } catch (error) {
       const message = error instanceof TypeError
         ? 'Unable to connect to the submission service. Please try again.'
@@ -180,6 +194,22 @@ export default function App() {
             {isSubmitting ? 'Sending...' : 'Send message'}
           </button>
         </form>
+
+        {isConfirmOpen && (
+          <div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setIsConfirmOpen(false); }}>
+            <section className="confirmation-modal" role="dialog" aria-modal="true" aria-labelledby="confirmation-title" aria-describedby="confirmation-message">
+              <span className="modal-mark" aria-hidden="true">✓</span>
+              <h2 id="confirmation-title">Confirm your submission</h2>
+              <p id="confirmation-message">Please confirm that all information is correct.</p>
+              <div className="modal-actions">
+                <button className="cancel-button" type="button" onClick={() => setIsConfirmOpen(false)} disabled={isSubmitting}>Cancel</button>
+                <button className="confirm-button" type="button" onClick={confirmSubmission} disabled={isSubmitting}>
+                  {isSubmitting ? 'Sending...' : 'Confirm & Submit'}
+                </button>
+              </div>
+            </section>
+          </div>
+        )}
 
         <section className="features" aria-labelledby="features-title">
           <div className="features-heading">
